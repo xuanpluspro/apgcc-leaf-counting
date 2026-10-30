@@ -1,0 +1,17 @@
+__pycache__/
+*.py[cod]
+.venv/
+exp/
+evaluation/
+predictions/
+benchmark.json
+data/*
+!data/README.md
+pretrained/*
+!pretrained/README.md
+*.pth
+*.pt
+*.safetensors
+*.tar
+*.zip
+upstream_reference/

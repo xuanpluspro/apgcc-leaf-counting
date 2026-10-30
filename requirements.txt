@@ -1,0 +1,6 @@
+# Install into the image's existing PyTorch environment; never reinstall torch here.
+# Requires preinstalled PyTorch >= 2.3. torchvision is not needed by this adapter.
+numpy>=1.24
+Pillow>=9.1
+scipy>=1.10
+tqdm>=4.65
