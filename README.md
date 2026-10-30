@@ -39,13 +39,13 @@ VGG 权重就是 PET/P2RLoss 共用的 ImageNet `vgg16_bn-6c64b313.pth`；完整
 python check_data.py --data-path /root/gpufree-data/p2rloss/data/RiceW3999
 
 DATA_PATH=/root/gpufree-data/p2rloss/data/RiceW3999 \
-BATCH_SIZE=8 EPOCHS=50 WORKERS=4 \
-bash train_ricew3999.sh ricew3999_ep50_bs8_run1
+BATCH_SIZE=32 EPOCHS=50 WORKERS=4 \
+bash train_ricew3999.sh ricew3999_ep50_bs32_run1
 ```
 
 若已将压缩包放入本仓库 data/ 并解压为 data/RiceW3999，省略 DATA_PATH 即可。
 启动脚本的最后一个参数是实验名；名称中的 ep50/bs8 只是文字，实际参数由环境变量决定。
-48GB 显存建议先用 batch=8；真实显存与点数、精度有关，未实测前不预设可用上限。
+默认 batch=32，作为48GB显存下的起始尝试；尚未在GPU实测，不能保证峰值显存。若OOM，改用 BATCH_SIZE=16。大batch不保证更高精度，学习率保持不变。
 可设置 `AMP=1` 开启 FP16 混合精度；默认 FP32，便于与现有实验比较。
 
 建议在 tmux 中运行上述训练，另开终端执行 nvitop。tmux 不能防止关机，恢复依赖检查点。
@@ -71,7 +71,7 @@ data/RiceW3999/
 
 | 项目 | 默认值 |
 |---|---|
-| batch / 总轮数 / workers | 8 / 50 / 4 |
+| batch / 总轮数 / workers | 32 / 50 / 4 |
 | 训练 patch / 验证 | 512×512 / 原图 batch=1 |
 | 优化器 / 权重衰减 | Adam / 1e-4 |
 | 主体 LR / VGG LR | 1e-4 / 1e-5 |
@@ -114,7 +114,7 @@ data/RiceW3999/
 
 ```bash
 python evaluate.py \
-  --checkpoint exp/ricew3999_ep50_bs8_run1/output/best_checkpoint.pth \
+  --checkpoint exp/ricew3999_ep50_bs32_run1/output/best_checkpoint.pth \
   --data-path /root/gpufree-data/p2rloss/data/RiceW3999 \
   --output evaluation/best
 ```
@@ -128,7 +128,7 @@ APGCC内部使用xy坐标，评价前明确转换为与PET/P2RLoss一致的yx欧
 
 ```bash
 python infer.py \
-  --checkpoint exp/ricew3999_ep50_bs8_run1/output/best_checkpoint.pth \
+  --checkpoint exp/ricew3999_ep50_bs32_run1/output/best_checkpoint.pth \
   --input /path/to/ryegrass_images \
   --output predictions/ryegrass
 ```
@@ -141,9 +141,9 @@ python infer.py \
 
 ```bash
 python benchmark_model.py \
-  --checkpoint exp/ricew3999_ep50_bs8_run1/output/best_checkpoint.pth \
+  --checkpoint exp/ricew3999_ep50_bs32_run1/output/best_checkpoint.pth \
   --size 512 --device cuda \
-  --output exp/ricew3999_ep50_bs8_run1/output/benchmark.json
+  --output exp/ricew3999_ep50_bs32_run1/output/benchmark.json
 ```
 
 默认batch1、FP32、20次预热/100次测量；测前向，不包含读图、传输、定位匹配和可视化。

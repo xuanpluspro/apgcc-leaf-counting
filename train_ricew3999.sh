@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 cd "$(dirname "$0")"
-BATCH_SIZE="${BATCH_SIZE:-8}"
+BATCH_SIZE="${BATCH_SIZE:-32}"
 EPOCHS="${EPOCHS:-50}"
 WORKERS="${WORKERS:-4}"
 VAL_EVERY="${VAL_EVERY:-5}"
