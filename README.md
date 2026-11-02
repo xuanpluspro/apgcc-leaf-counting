@@ -64,7 +64,16 @@ data/RiceW3999/
 清单一行一个完整 ID（不带扩展名），不按空格拆分。
 标注 TXT 一行两个原图像素坐标 `x y`，不使用 YOLO 归一化坐标；空文件表示零点。
 图片尺寸、越界点、重复 ID、缺失配对会明确报错。
-彻底检查跨划分的相同图像可加 `check_data.py --check-overlap`，它读取全部像素，较慢。
+数据检查默认使用快速模式：只读取图片头中的尺寸并检查所有标注，不逐张解码 RGB 像素，终端显示进度条。
+快速模式不能保证发现像素数据损坏；首次收到来源不明的数据或怀疑文件损坏时使用完整解码。
+
+```bash
+python check_data.py --data-path data/RiceW3999                 # 快速：头信息与标注
+python check_data.py --data-path data/RiceW3999 --decode        # 完整像素解码
+python check_data.py --data-path data/RiceW3999 --check-overlap # 完整解码并检查像素重复
+```
+
+可加 `--no-progress` 关闭进度条；JSON 统计字段保持不变。快速模式仍有逐文件读盘开销，不能保证特定加速倍数。
 若不同 patch 来自同一原图/植株，应在划分时按原图/植株分组；像素去重不能检测所有重叠裁剪泄漏。
 
 ## 训练参数
@@ -176,3 +185,4 @@ CPU测试仅说明工程链路；未在真实 RiceW3999 或 CUDA/AMP 上完成�
 
 
 验证默认每轮执行，`VAL_EVERY`／`--eval-every` 可覆盖。旧检查点允许恢复时切换验证间隔，并记录日志；不会补评估历史未验证轮次。切换频率可能改变随机数消耗和后续训练轨迹。
+
