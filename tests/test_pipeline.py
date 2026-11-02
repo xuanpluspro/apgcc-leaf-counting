@@ -269,8 +269,13 @@ class ResumeTest(unittest.TestCase):
             scheduler=torch.optim.lr_scheduler.StepLR(optimizer,2)
             scaler=torch.amp.GradScaler('cuda',enabled=False)
             path=Path(td)/'checkpoint.pth'
+            args.eval_every=5
             checkpointing.save(path,model,optimizer,scheduler,scaler,0,args,3.,0,{'train':'same'})
             state=checkpointing.load(path)
+            args.eval_every=1
+            result=checkpointing.restore(state,model,optimizer,scheduler,scaler,args,
+                                         {'train':'same'},train.logging.getLogger('test'))
+            self.assertEqual(result,(1,3.,0))
             args.epochs+=1
             with self.assertRaisesRegex(ValueError,'epochs'):
                 checkpointing.restore(state,model,optimizer,scheduler,scaler,args,{'train':'same'},train.logging.getLogger('test'))

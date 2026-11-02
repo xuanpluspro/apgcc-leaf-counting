@@ -33,7 +33,7 @@ def parser():
     p.add_argument('--epochs', type=int, default=50)
     p.add_argument('--workers', type=int, default=4)
     p.add_argument('--patch-size', type=int, default=512)
-    p.add_argument('--eval-every', type=int, default=5)
+    p.add_argument('--eval-every', type=int, default=1)
     p.add_argument('--lr', type=float, default=1e-4)
     p.add_argument('--lr-backbone', type=float, default=1e-5)
     p.add_argument('--lr-drop', type=int, default=300)

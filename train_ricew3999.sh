@@ -4,7 +4,7 @@ cd "$(dirname "$0")"
 BATCH_SIZE="${BATCH_SIZE:-32}"
 EPOCHS="${EPOCHS:-50}"
 WORKERS="${WORKERS:-4}"
-VAL_EVERY="${VAL_EVERY:-5}"
+VAL_EVERY="${VAL_EVERY:-1}"
 TAG="${1:-ricew3999_ep${EPOCHS}_bs${BATCH_SIZE}}"
 if [[ ! "$TAG" =~ ^[A-Za-z0-9][A-Za-z0-9_.-]*$ ]]; then
   echo "Invalid experiment tag" >&2

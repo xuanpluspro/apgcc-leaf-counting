@@ -66,11 +66,14 @@ def restore(state, model, optimizer, scheduler, scaler, args, fingerprint, logge
     old = state.get('args', {})
     fixed = ('epochs', 'lr', 'lr_backbone', 'lr_drop', 'lr_gamma', 'weight_decay',
              'patch_size', 'amp', 'no_aux', 'aux_weight', 'point_weight', 'seed',
-             'accum_steps', 'threshold', 'eval_every', 'loc_radii', 'clip_grad')
+             'accum_steps', 'threshold', 'loc_radii', 'clip_grad')
     for key in fixed:
         if key in old and old[key] != vars(args)[key]:
             raise ValueError(f'Resume setting differs at {key}: {old[key]!r} -> {vars(args)[key]!r}; '
                              'use the original settings (epochs is total planned epochs)')
+    if old.get('eval_every', args.eval_every) != args.eval_every:
+        logger.info(f'Resume changed validation interval: {old["eval_every"]} -> {args.eval_every}; '
+                    'past epochs are not re-evaluated; best model is selected from recorded validations')
     for key in ('batch_size', 'workers', 'data_path'):
         if old.get(key) != vars(args).get(key):
             logger.warning(f'Resume changed {key}; exact training trajectory may differ')
