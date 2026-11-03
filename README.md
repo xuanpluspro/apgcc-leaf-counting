@@ -104,7 +104,7 @@ python check_data.py --data-path data/RiceW3999 --check-overlap # 完整解码�
 | checkpoint.pth | 每轮最新完整训练状态，用于恢复 |
 | best_checkpoint.pth | 验证MAE最低的完整检查点，用于推理/评估 |
 | config.json / resume_config.json | 首次启动 / 最近恢复时的配置及环境 |
-| train.log | 追加式日志 |
+| ../logs/train.log | Python 追加式训练日志 |
 | train_history.csv | 每轮loss分量、LR、训练耗时和峰值已分配显存 |
 | metrics_history.csv | 各次验证的计数、定位、参数量、验证耗时 |
 | best_metrics.json | 最佳模型对应的整体指标 |
@@ -112,7 +112,9 @@ python check_data.py --data-path data/RiceW3999 --check-overlap # 完整解码�
 | evaluation/epoch_XXXX/per_image.csv | 逐图数量、误差、TP/FP/FN |
 | evaluation/epoch_XXXX/per_source.csv | 按 ricetip/wheat500/wheat1799 等前缀汇总 |
 
-脚本终端日志另存 `exp/<实验名>/train.log/running.log`，恢复时追加。
+日志统一保存在实验目录的 `logs/` 中：Python 日志为 `logs/train.log`，脚本终端日志为 `logs/running.log`。直接执行 `python train.py` 时只生成前者，运行训练脚本时两者都会生成。
+
+脚本终端日志另存 `exp/<实验名>/logs/running.log`，恢复时追加。
 没有教师模型；每个 pth 包含一套 model 权重及优化器、调度器、AMP scaler、轮数、最佳指标和随机状态。
 复用同一 TAG 执行原命令即可自动恢复，或 `--resume /path/to/checkpoint.pth`。
 保持原 EPOCHS（总预算）和模型/学习率/损失配置；因OOM调小 batch 会警告轨迹变化。
@@ -186,3 +188,16 @@ CPU测试仅说明工程链路；未在真实 RiceW3999 或 CUDA/AMP 上完成�
 
 验证默认每轮执行，`VAL_EVERY`／`--eval-every` 可覆盖。旧检查点允许恢复时切换验证间隔，并记录日志；不会补评估历史未验证轮次。切换频率可能改变随机数消耗和后续训练轨迹。
 
+
+
+### 日志目录命名更新
+
+```text
+exp/<实验名>/
+├── logs/
+│   ├── running.log   # shell 脚本捕获的终端输出
+│   └── train.log     # Python 日志记录
+└── output/           # 权重、配置、CSV、评估结果，路径不变
+```
+
+以前的 `train.log/` 是文件夹，名字合法但容易混淆，新运行统一使用 `logs/`。不自动移动、合并或删除旧日志；旧实验的 `train.log/running.log` 和 `output/train.log` 仍保留在原位置。使用同一实验名恢复时，检查点仍从原来的 `output/` 读取，新日志追加到 `logs/`，完整历史需结合旧日志查看。不要在运行中的训练上移动日志目录；下次启动时再更新并使用新布局。

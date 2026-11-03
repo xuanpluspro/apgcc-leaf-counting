@@ -13,11 +13,11 @@ fi
 DATA_PATH="${DATA_PATH:-$PWD/data/RiceW3999}"
 WEIGHTS_PATH="${WEIGHTS_PATH:-$PWD/pretrained/vgg16_bn-6c64b313.pth}"
 PYTHON_BIN="${PYTHON_BIN:-python}"
-mkdir -p "exp/$TAG/train.log"
+mkdir -p "exp/$TAG/logs"
 EXTRA=()
 if [[ "${AMP:-0}" == 1 ]]; then EXTRA+=(--amp); fi
 "$PYTHON_BIN" -u train.py \
   --data-path "$DATA_PATH" --pretrained "$WEIGHTS_PATH" \
   --batch-size "$BATCH_SIZE" --epochs "$EPOCHS" --workers "$WORKERS" \
   --eval-every "$VAL_EVERY" --tag "$TAG" --auto-resume "${EXTRA[@]}" \
-  2>&1 | tee -a "exp/$TAG/train.log/running.log"
+  2>&1 | tee -a "exp/$TAG/logs/running.log"

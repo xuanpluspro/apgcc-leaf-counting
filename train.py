@@ -74,12 +74,14 @@ def main(args):
     torch.backends.cudnn.deterministic = True
     output = args.output_root / args.tag / 'output'
     output.mkdir(parents=True, exist_ok=True)
+    log_dir = args.output_root / args.tag / 'logs'
+    log_dir.mkdir(parents=True, exist_ok=True)
     logger = logging.getLogger('apgcc')
     logger.setLevel(logging.INFO)
     for handler in logger.handlers:
         handler.close()
     logger.handlers.clear()
-    for handler in (logging.StreamHandler(), logging.FileHandler(output/'train.log', mode='a')):
+    for handler in (logging.StreamHandler(), logging.FileHandler(log_dir/'train.log', mode='a', encoding='utf-8')):
         handler.setFormatter(logging.Formatter('%(asctime)s | %(message)s'))
         logger.addHandler(handler)
     latest = output / 'checkpoint.pth'
