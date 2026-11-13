@@ -172,6 +172,9 @@ def main(args):
                            args, best_mae, best_epoch, fingerprint)
         logger.info(f'Checkpoint saved | completed epoch {epoch+1}')
 
+    from point_efficiency import export_efficiency
+    export_efficiency(model, output)
+
 
 if __name__ == '__main__':
     main(parser().parse_args())
